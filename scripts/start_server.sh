@@ -30,21 +30,29 @@ run_as_user_with_nvm() {
     "
 }
 
-# Install dependencies
-echo "Installing dependencies..."
-run_as_user_with_nvm "npm install --production"
+# Install PM2 globally if not already installed
+if ! run_as_user_with_nvm "command -v pm2" > /dev/null 2>&1; then
+    echo "Installing PM2 globally..."
+    run_as_user_with_nvm "npm install -g pm2"
+else
+    echo "PM2 already installed"
+fi
+
+# Install application dependencies
+echo "Installing application dependencies..."
+run_as_user_with_nvm "npm install --omit=dev"
 
 # Start or reload app with PM2
-if run_as_user_with_nvm "npx pm2 describe demo-node-app" > /dev/null 2>&1; then
+if run_as_user_with_nvm "pm2 describe demo-node-app" > /dev/null 2>&1; then
     echo "App exists, reloading..."
-    run_as_user_with_nvm "npx pm2 reload ecosystem.config.js"
+    run_as_user_with_nvm "pm2 reload ecosystem.config.js"
 else
     echo "Starting app with PM2..."
-    run_as_user_with_nvm "npx pm2 start ecosystem.config.js"
+    run_as_user_with_nvm "pm2 start ecosystem.config.js"
 fi
 
 # Save PM2 process list
-run_as_user_with_nvm "npx pm2 save"
+run_as_user_with_nvm "pm2 save"
 
 # Setup PM2 to start on system boot
-run_as_user_with_nvm "npx pm2 startup systemd -u $APP_USER --hp /home/$APP_USER" || true
+run_as_user_with_nvm "pm2 startup systemd -u $APP_USER --hp /home/$APP_USER" || true

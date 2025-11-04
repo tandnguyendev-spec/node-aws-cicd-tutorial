@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 const master = process.env.MASTER || 'default';
 
 app.get('/', (req, res) => {
-  res.send(`Hello World!, master: ${master}, build 1`);
+  res.send(`Hello World!, master: ${master}, build 02`);
 });
 
 app.get('/health', (req, res) => {

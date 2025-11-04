@@ -19,17 +19,28 @@ echo "Detected system user: $APP_USER"
 
 cd /opt/demo-node-app/current
 
+# Load NVM for the APP_USER and run PM2 commands
+# This function runs commands as APP_USER with nvm loaded
+run_as_user_with_nvm() {
+    sudo -u $APP_USER bash -c "
+        export NVM_DIR=\"/home/$APP_USER/.nvm\"
+        [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\"
+        cd /opt/demo-node-app/current
+        $1
+    "
+}
+
 # Start or reload app with PM2
-if npx pm2 describe demo-node-app > /dev/null 2>&1; then
+if run_as_user_with_nvm "npx pm2 describe demo-node-app" > /dev/null 2>&1; then
     echo "App exists, reloading..."
-    npx pm2 reload ecosystem.config.js
+    run_as_user_with_nvm "npx pm2 reload ecosystem.config.js"
 else
     echo "Starting app with PM2..."
-    npx pm2 start ecosystem.config.js
+    run_as_user_with_nvm "npx pm2 start ecosystem.config.js"
 fi
 
 # Save PM2 process list
-npx pm2 save
+run_as_user_with_nvm "npx pm2 save"
 
 # Setup PM2 to start on system boot
-sudo -u $APP_USER bash -c "cd /opt/demo-node-app/current && npx pm2 startup systemd -u $APP_USER --hp /home/$APP_USER" || true
+run_as_user_with_nvm "npx pm2 startup systemd -u $APP_USER --hp /home/$APP_USER" || true

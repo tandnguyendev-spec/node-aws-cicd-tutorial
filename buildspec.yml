@@ -1,0 +1,37 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing dependencies
+      - npm ci
+  pre_build:
+    commands:
+      - echo Running lint & tests
+      - npm run lint --if-present
+      - npm test --if-present
+  build:
+    commands:
+      - echo Building app
+      - npm run build --if-present
+      - echo Prune dev deps, keep production only
+      - npm ci --omit=dev
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
+    - '!node_modules/.cache/**'
+    - '!**/.git/**'
+    - '!**/.github/**'
+    - '!**/test/**'
+    - '!**/*.md'
+  base-directory: '.'
+  discard-paths: no
+
+cache:
+  paths:
+    - 'node_modules/**/*'

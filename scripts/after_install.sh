@@ -4,6 +4,7 @@ set -euo pipefail
 
 # Move release into a versioned folder and update symlink
 TS=$(date +%Y%m%d%H%M%S)
+mkdir -p /opt/demo-node-app/releases
 if [ -d /opt/demo-node-app/release ]; then
     mv /opt/demo-node-app/release /opt/demo-node-app/releases/$TS
 fi

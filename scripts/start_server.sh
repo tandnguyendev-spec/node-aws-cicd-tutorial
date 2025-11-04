@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /opt/demo-node-app/release
+cd /opt/demo-node-app/current
 
 # Start or reload app with PM2
 if npx pm2 describe demo-node-app > /dev/null 2>&1; then
@@ -16,4 +16,4 @@ fi
 npx pm2 save
 
 # Setup PM2 to start on system boot (run as ec2-user)
-sudo -u ec2-user bash -c "cd /opt/demo-node-app/release && npx pm2 startup systemd -u ec2-user --hp /home/ec2-user" || true
+sudo -u ec2-user bash -c "cd /opt/demo-node-app/current && npx pm2 startup systemd -u ec2-user --hp /home/ec2-user" || true

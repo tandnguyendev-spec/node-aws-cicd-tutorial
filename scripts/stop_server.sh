@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /opt/demo-node-app/release
+# Check if current deployment exists
+if [ ! -L "/opt/demo-node-app/current" ]; then
+    echo "No current deployment found, nothing to stop"
+    exit 0
+fi
+
+cd /opt/demo-node-app/current
 
 # Stop app with PM2 if it exists
 if npx pm2 describe demo-node-app > /dev/null 2>&1; then

@@ -30,6 +30,10 @@ run_as_user_with_nvm() {
     "
 }
 
+# Install dependencies
+echo "Installing dependencies..."
+run_as_user_with_nvm "npm install --production"
+
 # Start or reload app with PM2
 if run_as_user_with_nvm "npx pm2 describe demo-node-app" > /dev/null 2>&1; then
     echo "App exists, reloading..."
